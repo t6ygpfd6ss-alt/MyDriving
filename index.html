@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Games Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e2f;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #4caf50;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .game-card {
+            background: #333;
+            border-radius: 10px;
+            margin: 10px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+        .game-card button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #4caf50;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .game-card button:hover {
+            background: #45a049;
+        }
+        input {
+            padding: 5px;
+            margin-top: 10px;
+            width: 50%;
+        }
+        p.message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fun Games Hub</h1>
+        <p>Play mini-games right in your browser!</p>
+    </header>
+    <main>
+        <!-- Guess the Number -->
+        <div class="game-card">
+            <h2>Guess the Number</h2>
+            <button onclick="startGuessGame()">Play</button>
+            <div id="guess-game" style="display:none;">
+                <p>Guess a number between 1 and 100:</p>
+                <input type="number" id="guess-input">
+                <button onclick="checkGuess()">Submit</button>
+                <p class="message" id="guess-message"></p>
+            </div>
+        </div>
+
+        <!-- Click Speed Test -->
+        <div class="game-card">
+            <h2>Click Speed Test</h2>
+            <button onclick="startClickGame()">Start</button>
+            <div id="click-game" style="display:none;">
+                <p>Click the button as many times as you can in 5 seconds!</p>
+                <button id="click-button" onclick="registerClick()">Click me!</button>
+                <p class="message" id="click-message"></p>
+            </div>
+        </div>
+
+        <!-- Memory Game -->
+        <div class="game-card">
+            <h2>Memory Game</h2>
+            <button onclick="startMemoryGame()">Play</button>
+            <div id="memory-game" style="display:none;">
+                <p>Remember the sequence of numbers:</p>
+                <p id="memory-sequence"></p>
+                <input type="text" id="memory-input" placeholder="Enter the sequence">
+                <button onclick="checkMemory()">Submit</button>
+                <p class="message" id="memory-message"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Guess the Number ---
+        let secretNumber, attempts;
+        function startGuessGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            document.getElementById('guess-game').style.display = 'block';
+            document.getElementById('guess-message').textContent = '';
+            document.getElementById('guess-input').value = '';
+        }
+        function checkGuess() {
+            const guess = Number(document.getElementById('guess-input').value);
+            attempts++;
+            const message = document.getElementById('guess-message');
+            if (!guess || guess < 1 || guess > 100) {
+                message.textContent = 'Enter a number between 1 and 100';
+                return;
+            }
+            if (guess === secretNumber) {
+                message.textContent = `🎉 Correct! You guessed in ${attempts} tries!`;
+            } else if (guess < secretNumber) {
+                message.textContent = 'Too low! Try again.';
+            } else {
+                message.textContent = 'Too high! Try again.';
+            }
+        }
+
+        // --- Click Speed Test ---
+        let clickCount = 0, clickInterval;
+        function startClickGame() {
+            clickCount = 0;
+            document.getElementById('click-game').style.display = 'block';
+            document.getElementById('click-message').textContent = 'Go!';
+            document.getElementById('click-button').disabled = false;
+            let timeLeft = 5;
+            document.getElementById('click-message').textContent = `Time left: ${timeLeft}s`;
+            clickInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    document.getElementById('click-message').textContent = `Time left: ${timeLeft}s`;
+                } else {
+                    clearInterval(clickInterval);
+                    document.getElementById('click-button').disabled = true;
+                    document.getElementById('click-message').textContent = `Time's up! You clicked ${clickCount} times!`;
+                }
+            }, 1000);
+        }
+        function registerClick() { clickCount++; }
+
+        // --- Memory Game ---
+        let memorySequence = '';
+        function startMemoryGame() {
+            memorySequence = '';
+            for (let i = 0; i < 5; i++) {
+                memorySequence += Math.floor(Math.random() * 9) + 1;
+            }
+            document.getElementById('memory-game').style.display = 'block';
+            document.getElementById('memory-sequence').textContent = memorySequence;
+            document.getElementById('memory-input').value = '';
+            document.getElementById('memory-message').textContent = '';
+            // Hide sequence after 3 seconds
+            setTimeout(() => {
+                document.getElementById('memory-sequence').textContent = '';
+            }, 3000);
+        }
+        function checkMemory() {
+            const userInput = document.getElementById('memory-input').value;
+            const message = document.getElementById('memory-message');
+            if (userInput === memorySequence) {
+                message.textContent = '🎉 Correct! You remembered it!';
+            } else {
+                message.textContent = `❌ Wrong! The sequence was ${memorySequence}`;
+            }
+        }
+    </script>
+</body>
+</html>
